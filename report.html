@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FutScout Report</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle, rgba(0, 0, 0, 0.85) 0%, rgba(255, 215, 0, 0.2) 100%);
+      color: #f8f9fa;
+    }
+
+    header {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 1.5rem;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    header img {
+      height: 50px;
+    }
+
+    header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      color: #ffc107;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .player-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      color: #ffc107;
+    }
+
+    .meta {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      color: #38bdf8;
+      margin-top: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .rating-stars {
+      margin-top: 1rem;
+      font-size: 2rem;
+      color: gold;
+      text-shadow: 1px 1px 3px black;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid #475569;
+      padding-bottom: 0.25rem;
+    }
+
+    .stat-list {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.75rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+    }
+
+    .verdict {
+      margin-top: 2rem;
+      background: #16a34a;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #fff;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .pitch {
+      width: 250px;
+      height: 400px;
+      background: #1e293b;
+      border: 2px solid #38bdf8;
+      border-radius: 10px;
+      margin: auto;
+      position: relative;
+    }
+
+    .pos {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #ccc;
+      font-size: 0.7rem;
+    }
+
+    .pos .dot {
+      width: 12px;
+      height: 12px;
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      margin: auto;
+    }
+
+    .pos.highlight .dot {
+      background-color: #ffc107;
+      border: 2px solid white;
+    }
+
+    canvas {
+      max-width: 400px;
+      margin: 2rem auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/static/images/scout.png" alt="FutScout logo">
+    <h1>FUTSCOUT</h1>
+  </header>
+  <div class="container">
+    <div class="card">
+      <div class="player-name" id="playerName">Player Name</div>
+      <div class="meta" id="meta">Team / League | Jersey # | Height | Position</div>
+      <div class="rating-stars" id="starsWithRating">⭐⭐⭐ 7.0 / 10</div>
+    </div>
+
+    <div class="section-title">Pitch Position</div>
+    <div class="pitch" id="pitch"></div>
+
+    <div class="section-title">Player Traits Radar</div>
+    <canvas id="radarChart"></canvas>
+
+    <div class="section-title">Basic Stats</div>
+    <div class="stat-list" id="basicStats"></div>
+
+    <div class="section-title">Advanced Metrics</div>
+    <div class="stat-list" id="advancedStats"></div>
+
+    <div class="verdict" id="verdict">This player is a star player.</div>
+  </div>
+
+  <script>
+    const data = JSON.parse(localStorage.getItem("scout_report"));
+
+    document.getElementById("playerName").textContent = data.player_name;
+    document.getElementById("meta").textContent = `${data.team_name} / ${data.league} | #${data.jersey_no} | ${data.height} cm | ${data.position}`;
+    const rating = data.predicted_rating;
+    let stars = rating >= 8 ? '⭐⭐⭐⭐⭐' :
+                rating >= 7.5 ? '⭐⭐⭐⭐✨' :
+                rating >= 7   ? '⭐⭐⭐⭐' :
+                rating >= 6.5 ? '⭐⭐⭐✨' :
+                rating >= 6   ? '⭐⭐⭐' : '⭐⭐';
+    document.getElementById("starsWithRating").textContent = `${stars} ${rating.toFixed(1)} / 10`;
+
+
+    const verdict = (r) => r >= 8 ? "🌟 Star player (Ballon d'Or potential)" : r >= 7.5 ? "🔵 Important player" : r >= 7 ? "🟢 Reliable starter" : "🟡 Squad player";
+    document.getElementById("verdict").textContent = verdict(data.predicted_rating);
+
+    const pitchPositions = {
+      GK: [50, 5], RB: [20, 20], CB1: [40, 20], CB2: [60, 20], LB: [80, 20],
+      CDM: [50, 35], CM: [50, 50], CAM: [50, 65], RM: [20, 70], LM: [80, 70], ST: [50, 85]
+    };
+
+    const pitch = document.getElementById("pitch");
+    Object.entries(pitchPositions).forEach(([pos, [x, y]]) => {
+      const el = document.createElement("div");
+      el.className = "pos";
+      el.style.left = `${x}%`;
+      el.style.top = `${y}%`;
+      if (pos === data.position || ((pos === 'CB1' || pos === 'CB2') && data.position === 'CB')) el.classList.add("highlight");
+      el.innerHTML = `<div class="dot"></div><div>${pos.replace(/[0-9]/g, '')}</div>`;
+      pitch.appendChild(el);
+    });
+
+    const mins = parseFloat(data.raw_stats.mins || 1);
+    const seasonFromPerGame = (value) => Math.round(value * (mins / 90));
+
+    const radarStats = {
+      Shooting: data.raw_stats.goals + data.raw_stats.shots_taken,
+      Assisting: data.raw_stats.asists + (data.advanced_stats.xA || 0),
+      Passing: seasonFromPerGame(data.advanced_stats["Passes/90"] || 0) + seasonFromPerGame(data.advanced_stats["KP/90"] || 0) + (data.advanced_stats.xA || 0),
+      Dribbling: seasonFromPerGame(data.advanced_stats["Drb/90"] || 0),
+      Defense: seasonFromPerGame(data.raw_stats.tackles + data.raw_stats.clear + data.raw_stats.inter + data.raw_stats.blocks + data.raw_stats.owng || 0),
+      Crossing: data.raw_stats.crosses + seasonFromPerGame(data.raw_stats.longb || 0)
+    };
+
+    const maxes = {
+      Shooting: 25, Assisting: 15, Passing: 100, Dribbling: 50, Defense: 60, Crossing: 30
+    };
+
+    new Chart(document.getElementById("radarChart"), {
+      type: 'radar',
+      data: {
+        labels: Object.keys(radarStats),
+        datasets: [{
+          label: 'Season Profile',
+          data: Object.entries(radarStats).map(([k, v]) => Math.min(100, (v / maxes[k]) * 100)),
+          backgroundColor: 'rgba(255, 193, 7, 0.4)',
+          borderColor: '#ffc107',
+          pointBackgroundColor: '#fff',
+          borderWidth: 2,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          r: {
+            min: 0,
+            max: 100,
+            grid: { color: '#555' },
+            angleLines: { color: '#444' },
+            pointLabels: { color: '#fff', font: { size: 13 } },
+            ticks: { display: false }
+          }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    const labels = {
+      mins: "Minutes Played", goals: "Goals", asists: "Assists", shots_taken: "Shots Taken",
+      crosses: "Crosses", longb: "Long Balls/90", thrb: "Through Balls/90", keyp: "Key Passes/90",
+      avgp: "Average Passes/90", drb: "Dribbles/90", spg: "Shots/Game", tackles: "Tackles/90",
+      owng: "Own Goals", clear: "Clearances/90", inter: "Interceptions/90", blocks: "Blocks/90",
+      "Passes/90": "Passes", "KP/90": "Key Passes", "Drb/90": "Dribbles",
+      xG: "(xG)Expected Goals", xA: "(xA)Expected Assists", xGpg: "xG/90", xApg: "xA/90",
+      conversion_rate: "Conversion Rate", expected_conversion_rate: "Expected Conv. Rate",
+      crosses_p90: "Crosses/90", "G-xG": "Goal Delta", "A-xA": "Assist Delta"
+    };
+
+    const basicStats = document.getElementById("basicStats");
+    Object.entries(data.raw_stats).forEach(([k, v]) => {
+      const stat = document.createElement("div");
+      stat.className = "stat";
+      stat.innerHTML = `<span>${labels[k] || k}</span><span>${v}</span>`;
+      basicStats.appendChild(stat);
+    });
+
+    const advancedStats = document.getElementById("advancedStats");
+    Object.entries(data.advanced_stats).forEach(([k, v]) => {
+      const stat = document.createElement("div");
+      stat.className = "stat";
+      stat.innerHTML = `<span>${labels[k] || k}</span><span>${parseFloat(v).toFixed(2)}</span>`;
+      advancedStats.appendChild(stat);
+    });
+  </script>
+</body>
+</html>
+

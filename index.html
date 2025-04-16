@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FUTSCOUT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(255, 215, 0, 0.2) 100%);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    header img {
+      height: 50px;
+      margin-right: 15px;
+    }
+
+    header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: #ffc107;
+      border-bottom: 1px solid #444;
+      padding-bottom: 0.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+    }
+
+    input::placeholder,
+    select {
+      color: #ccc;
+    }
+
+    input:focus, select:focus {
+      background-color: rgba(255, 255, 255, 0.2);
+      outline: none;
+      border: none;
+    }
+
+    .button {
+      display: block;
+      width: 100%;
+      margin-top: 2rem;
+      padding: 0.75rem;
+      background-color: #007bff;
+      border: none;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/static/images/scout.png" alt="FutScout logo">
+    <h1>FUTSCOUT</h1>
+  </header>
+
+  <div class="container">
+    <form id="playerForm">
+      <div class="section">
+        <h2>Personal Information</h2>
+        <div class="grid">
+          <div><label>Player Name</label><input type="text" name="name"></div>
+          <div><label>Age</label><input type="number" name="age"></div>
+          <div><label>Team Name</label><input type="text" name="team_name"></div>
+          <div><label>League</label><input type="text" name="league"></div>
+          <div><label>Jersey No.</label><input type="number" name="jersey_no"></div>
+          <div><label>Height (cm)</label><input type="number" name="height"></div>
+          <div>
+            <label>Position</label>
+            <select name="position">
+              <option value="ST">ST</option>
+              <option value="CF">CF</option>
+              <option value="CAM">CAM</option>
+              <option value="CM">CM</option>
+              <option value="CDM">CDM</option>
+              <option value="CB">CB</option>
+              <option value="LB">LB</option>
+              <option value="RB">RB</option>
+              <option value="LM">LM</option>
+              <option value="RM">RM</option>
+              
+              
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Attacking Stats</h2>
+        <div class="grid">
+          <div><label>Minutes Played</label><input type="number" step="0.01" name="mins"></div>
+          <div><label>Goals</label><input type="number" step="0.01" name="goals"></div>
+          <div><label>Assists</label><input type="number" step="0.01" name="asists"></div>
+          <div><label>Shots Taken</label><input type="number" step="0.01" name="shots_taken"></div>
+          <div><label>Shots/Game</label><input type="number" step="0.01" name="spg"></div>
+          <div><label>Crosses</label><input type="number" step="0.01" name="crosses"></div>
+          <div><label>Dribbles p90</label><input type="number" step="0.01" name="drb"></div>
+          <div><label>Key Passes p90</label><input type="number" step="0.01" name="keyp"></div>
+          <div><label>Avg Passes p90</label><input type="number" step="0.01" name="avgp"></div>
+          <div><label>Through Balls p90</label><input type="number" step="0.01" name="thrb"></div>
+          <div><label>Long Balls p90</label><input type="number" step="0.01" name="longb"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Defensive Stats</h2>
+        <div class="grid">
+          <div><label>Tackles p90</label><input type="number" step="0.01" name="tackles"></div>
+          <div><label>Interceptions p90</label><input type="number" step="0.01" name="inter"></div>
+          <div><label>Clearances p90</label><input type="number" step="0.01" name="clear"></div>
+          <div><label>Blocks p90</label><input type="number" step="0.01" name="blocks"></div>
+          <div><label>Own Goals</label><input type="number" step="0.01" name="owng"></div>
+        </div>
+      </div>
+
+      <button type="submit" class="button">Generate Scouting Report</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("playerForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const jsonData = {};
+      formData.forEach((value, key) => jsonData[key] = value);
+
+      const response = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(jsonData)
+      });
+
+      const result = await response.json();
+      if (result.error) {
+        alert("Prediction error: " + result.error);
+        return;
+      }
+      localStorage.setItem("scout_report", JSON.stringify(result));
+      window.location.href = "/report";
+    });
+  </script>
+</body>
+</html>
